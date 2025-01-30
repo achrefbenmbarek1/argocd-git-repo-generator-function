@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
-	v1beta1input "github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
+	v1beta1input "github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1"
 
 	// "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/errors"
@@ -18,123 +18,11 @@ import (
 	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
 )
 
-// func generateHelmRelease(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string, valuesJSON []byte) (*v1beta1.Release, error) {
-// 	helRelease := &v1beta1.Release{
-// 		Spec: v1beta1.ReleaseSpec{
-// 			ForProvider: v1beta1.ReleaseParameters{
-// 				Chart: v1beta1.ChartSpec{
-// 					Name:       in.Spec.ForProvider.Chart.Name,
-// 					Repository: in.Spec.ForProvider.Chart.Repository,
-// 					Version:    in.Spec.ForProvider.Chart.Version,
-// 				},
-//
-// 				Namespace: in.Spec.ForProvider.Namespace,
-// 				ValuesSpec: v1beta1.ValuesSpec{
-// 					Values: runtime.RawExtension{Raw: valuesJSON},
-// 					Set:    generateSetItems(reposUrls),
-// 				},
-// 			},
-// 		},
-// 	}
-//
-// 	helRelease.SetProviderConfigReference(&v1.Reference{Name: "helm-provider"})
-// 	return helRelease, nil
-// }
-//
-// func generateValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string) ([]byte, error) {
-// 	values := map[string]interface{}{
-// 		"server": in.Spec.ForProvider.Values.Server,
-// 		"configs": map[string]interface{}{
-// 			"secret":              in.Spec.ForProvider.Values.Configs.Secret,
-// 			"credentialTemplates": generateCredentialTemplates(reposUrls),
-// 			"repositories":        generateRepositories(reposUrls),
-// 		},
-// 	}
-// 	return json.Marshal(values)
-// }
-//
-// func extractRepoInfo(url string) (string, string, bool) {
-// 	repoRegex := regexp.MustCompile(`.*/([^/]+)\.git$`)
-// 	userRegex := regexp.MustCompile(`github\.com:([^/]+)`)
-//
-// 	repoMatches := repoRegex.FindStringSubmatch(url)
-// 	userMatches := userRegex.FindStringSubmatch(url)
-//
-// 	if len(repoMatches) < 2 || len(userMatches) < 2 {
-// 		return "", "", false
-// 	}
-// 	return repoMatches[1], userMatches[1], true
-// }
-//
-// func generateRepositories(urls []string) map[string]interface{} {
-// 	repositories := make(map[string]interface{})
-// 	for _, url := range urls {
-// 		repoName, username, valid := extractRepoInfo(url)
-// 		if !valid {
-// 			continue
-// 		}
-// 		key := "github-private-repo-" + repoName
-// 		repositories[key] = Repository{
-// 			URL:            url,
-// 			Type:           "git",
-// 			Name:           repoName,
-// 			CredentialName: username,
-// 		}
-// 	}
-// 	return repositories
-// }
-//
-// func generateCredentialTemplates(urls []string) map[string]interface{} {
-// 	credentials := make(map[string]interface{})
-// 	for _, url := range urls {
-// 		repoName, _, valid := extractRepoInfo(url)
-// 		if !valid {
-// 			continue
-// 		}
-// 		key := "github-private-repo-" + repoName
-// 		credentials[key] = map[string]interface{}{
-// 			"url": url,
-// 		}
-// 	}
-// 	return credentials
-// }
-//
-// func generateSetItems(urls []string) []v1beta1.SetVal {
-// 	var setItems []v1beta1.SetVal
-// 	for _, url := range urls {
-// 		repoName, _, valid := extractRepoInfo(url)
-// 		if !valid {
-// 			continue
-// 		}
-// 		key := "github-private-repo-" + repoName
-// 		setItems = append(setItems, v1beta1.SetVal{
-// 			Name: fmt.Sprintf("configs.credentialTemplates.%s.sshPrivateKey", key),
-// 			ValueFrom: &v1beta1.ValueFromSource{
-// 				SecretKeyRef: &v1beta1.DataKeySelector{
-// 					NamespacedName: v1beta1.NamespacedName{
-// 						Namespace: "argocd",
-// 						Name:      "ssh-private-key",
-// 					},
-// 					Key: "ssh-private-key",
-// 				},
-// 			},
-// 		})
-// 	}
-// 	return setItems
-// }
-
 type Function struct {
 	fnv1.UnimplementedFunctionRunnerServiceServer
 
 	log logging.Logger
 }
-
-// type Repository struct {
-// 	URL            string `json:"url" yaml:"url"`
-// 	Type           string `json:"type" yaml:"type"`
-// 	Name           string `json:"name" yaml:"name"`
-// 	CredentialName string `json:"credentialName" yaml:"credentialName"`
-// }
 
 func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) (*fnv1.RunFunctionResponse, error) {
 

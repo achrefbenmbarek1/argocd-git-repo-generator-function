@@ -111,7 +111,7 @@ linters:
     - gci
     - gofmt  # We enable this as well as goimports for its simplify mode.
     - prealloc
-    - revive
+    # - revive
     - unconvert
     - misspell
     - nakedret
@@ -120,6 +120,7 @@ linters:
   disable:
     # These linters are all deprecated as of golangci-lint v1.49.0. We disable
     # them explicitly to avoid the linter logging deprecation warnings.
+    - revive
     - deadcode
     - varcheck
     - scopelint

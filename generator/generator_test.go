@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
-	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
+	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
@@ -136,15 +136,15 @@ func TestGenerateSetItems(t *testing.T) {
 }
 
 func TestGenerateValues(t *testing.T) {
-	in := &v1beta1Input.ArgoRepoGeneratorInput{
-		Spec: v1beta1Input.ArgoRepoGeneratorSpec{
-			ForProvider: v1beta1Input.ForProviderSpec{
-				Values: v1beta1Input.ValuesSpec{
-					Server: v1beta1Input.ServerSpec{
-						Service: v1beta1Input.ServerServiceSpec{
+	in := &v1beta1input.ArgoRepoGeneratorInput{
+		Spec: v1beta1input.ArgoRepoGeneratorSpec{
+			ForProvider: v1beta1input.ForProviderSpec{
+				Values: v1beta1input.ValuesSpec{
+					Server: v1beta1input.ServerSpec{
+						Service: v1beta1input.ServerServiceSpec{
 							Type: "ClusterIP",
 						},
-						Ingress: v1beta1Input.IngressSpec{
+						Ingress: v1beta1input.IngressSpec{
 							Enabled:          true,
 							IngressClassName: "nginx",
 							Hostname:         "argocd.example.com",
@@ -153,8 +153,8 @@ func TestGenerateValues(t *testing.T) {
 							TLS:              true,
 						},
 					},
-					Configs: v1beta1Input.ConfigSpec{
-						Secret: v1beta1Input.SecretSpec{
+					Configs: v1beta1input.ConfigSpec{
+						Secret: v1beta1input.SecretSpec{
 							CreateSecret:              true,
 							ArgoCDServerAdminPassword: "admin123",
 						},
@@ -166,7 +166,7 @@ func TestGenerateValues(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		in        *v1beta1Input.ArgoRepoGeneratorInput
+		in        *v1beta1input.ArgoRepoGeneratorInput
 		reposUrls []string
 	}{
 		{
@@ -224,7 +224,7 @@ func TestGenerateValues(t *testing.T) {
 	}
 }
 
-func generateExpectedValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string) map[string]interface{} {
+func generateExpectedValues(in *v1beta1input.ArgoRepoGeneratorInput, reposUrls []string) map[string]interface{} {
 	credentialTemplates := make(map[string]interface{})
 	repositories := make(map[string]interface{})
 

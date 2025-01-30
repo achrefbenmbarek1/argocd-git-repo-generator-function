@@ -5,7 +5,7 @@ import (
 	// "errors"
 	"fmt"
 
-	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
+	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1"
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/utils"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
 )
 
-func GenerateValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string) ([]byte, error) {
+func GenerateValues(in *v1beta1input.ArgoRepoGeneratorInput, reposUrls []string) ([]byte, error) {
 	values := map[string]interface{}{
 		"server": in.Spec.ForProvider.Values.Server,
 		"configs": map[string]interface{}{
@@ -50,7 +50,7 @@ func GenerateSetItems(urls []string) []v1beta1.SetVal {
 	return setItems
 }
 
-func GenerateHelmRelease(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string, valuesJSON []byte) (*v1beta1.Release, error) {
+func GenerateHelmRelease(in *v1beta1input.ArgoRepoGeneratorInput, reposUrls []string, valuesJSON []byte) (*v1beta1.Release, error) {
 	helmRelease := &v1beta1.Release{
 		Spec: v1beta1.ReleaseSpec{
 			ForProvider: v1beta1.ReleaseParameters{
