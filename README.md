@@ -21,7 +21,11 @@ Make sure that you've a Kubernetes cluster where you've deployed Crossplane and 
      ```bash
      nix develop ./nix-flake/kuberFlake#kuber --impure
      ```
-   - Deploy crossplane to the 
+   - Deploy crossplane to the cluster through the run of this command from the root directory:
+     ```bash
+     helmfile sync
+     ```
+
    - Deploy the Crossplane Helm provider by using the provided package from the Crossplane registry and the other necessary resources.
    You can use the provided example just go under the root directory and run this 2 times: 
    ```bash
