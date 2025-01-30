@@ -1,44 +1,30 @@
-# function-template-go
-[![CI](https://github.com/crossplane/function-template-go/actions/workflows/ci.yml/badge.svg)](https://github.com/crossplane/function-template-go/actions/workflows/ci.yml)
+# argo-cd-git-repo-generator-function
 
-A template for writing a [composition function][functions] in [Go][go].
+A [composition function][functions] in [Go][go] that names the repositories, the credentialTemplates, and the name keys in the Helm release resource of ArgoCD provided by the Crossplane Helm provider, dynamically based on an array of repo URLs given to the Crossplane claim.
 
-To learn how to use this template:
+## How to use this:
 
-* [Follow the guide to writing a composition function in Go][function guide]
-* [Learn about how composition functions work][functions]
-* [Read the function-sdk-go package documentation][package docs]
+Make sure that you've a Kubernetes cluster where you've deployed Crossplane and the Helm provider of Crossplane. You will also need to define the required resources and configurations to enable proper integration. These are what you need to define:
 
-If you just want to jump in and get started:
+1. **Install Crossplane and the Helm Provider**:
+   - Deploy Crossplane in your Kubernetes cluster if it’s not already installed.
+   If you don't have a kubernetes cluster and you're new to this (and you use linux or windows with wsl) just follow this:
+     - install nix through running this command:
+     ```bash 
+     sh <(curl -L https://nixos.org/nix/install) --daemon
+     ```
+     - enable flakes though running this:
+     ```bash
+     echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
+     ```
+     - Create the environment with the necessary and preferable packages installed (from now on all the packages would be available in the shell session that you ran this command on, the packages will be unaccessible in any other session unless you run this command on it, one more thing the first time that you're gonna run this it will take a little bit of time but your subsequent runs will be basically instantanious cause the packages will be cached, at the end of this I will show you how to remove that cache and uninstall everything that we've installed with this command with another one command):
+     ```bash
+     nix develop ./nix-flake/kuberFlake#kuber --impure
+     ```
+   - Deploy crossplane to the 
+   - Deploy the Crossplane Helm provider by using the provided package from the Crossplane registry and the other necessary resources.
+   You can use the provided example just go under the root directory and run this 2 times: 
+   ```bash
+   kubectl apply -f helm-provider-stuff
+   ```
 
-1. Replace `function-template-go` with your function in `go.mod`,
-   `package/crossplane.yaml`, and any Go imports. (You can also do this
-   automatically by running the `./init.sh <function-name>` script.)
-1. Update `input/v1beta1/` to reflect your desired input (and run `go generate ./...`)
-1. Add your logic to `RunFunction` in `fn.go`
-1. Add tests for your logic in `fn_test.go`
-1. Update this file, `README.md`, to be about your function!
-
-This template uses [Go][go], [Docker][docker], and the [Crossplane CLI][cli] to
-build functions.
-
-```shell
-# Run code generation - see input/generate.go
-$ go generate ./...
-
-# Run tests - see fn_test.go
-$ go test ./...
-
-# Build the function's runtime image - see Dockerfile
-$ docker build . --tag=runtime
-
-# Build a function package - see package/crossplane.yaml
-$ crossplane xpkg build -f package --embed-runtime-image=runtime
-```
-
-[functions]: https://docs.crossplane.io/latest/concepts/composition-functions
-[go]: https://go.dev
-[function guide]: https://docs.crossplane.io/knowledge-base/guides/write-a-composition-function-in-go
-[package docs]: https://pkg.go.dev/github.com/crossplane/function-sdk-go
-[docker]: https://www.docker.com
-[cli]: https://docs.crossplane.io/latest/cli
