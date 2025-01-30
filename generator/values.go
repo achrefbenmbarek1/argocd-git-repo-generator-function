@@ -5,6 +5,8 @@ import (
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/utils"
 )
 
+// GenerateRepositories creates a map of repository configurations from Git URLs
+// Parses SSH-style URLs (git@github.com:user/repo.git) to extract repo metadata
 func GenerateRepositories(urls []string) map[string]interface{} {
 	repositories := make(map[string]interface{})
 	for _, url := range urls {
@@ -37,4 +39,3 @@ func GenerateCredentialTemplates(urls []string) map[string]interface{} {
 	}
 	return credentials
 }
-

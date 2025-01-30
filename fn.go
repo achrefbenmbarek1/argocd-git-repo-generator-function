@@ -2,13 +2,10 @@ package main
 
 import (
 	"context"
-	// "encoding/json"
-	// "fmt"
-	// "regexp"
 
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
-	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
-	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
+	v1beta1input "github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
+
 	// "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/errors"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
@@ -17,7 +14,8 @@ import (
 	"github.com/crossplane/function-sdk-go/resource"
 	"github.com/crossplane/function-sdk-go/resource/composed"
 	"github.com/crossplane/function-sdk-go/response"
-	// "k8s.io/apimachinery/pkg/runtime"
+
+	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
 )
 
 // func generateHelmRelease(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string, valuesJSON []byte) (*v1beta1.Release, error) {
@@ -143,7 +141,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	f.log.Info("Running function", "tag", req.GetMeta().GetTag())
 	rsp := response.To(req, response.DefaultTTL)
 
-	in := &v1beta1Input.ArgoRepoGeneratorInput{}
+	in := &v1beta1input.ArgoRepoGeneratorInput{}
 	if err := request.GetInput(req, in); err != nil {
 		response.Fatal(rsp, errors.Wrapf(err, "cannot get Function input from %T", req))
 		return rsp, nil
@@ -165,7 +163,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 
 	_ = v1beta1.SchemeBuilder.AddToScheme(composed.Scheme)
 
-  helmRelease, _ := generator.GenerateHelmRelease(in, reposUrls, valuesJSON)
+	helmRelease, _ := generator.GenerateHelmRelease(in, reposUrls, valuesJSON)
 
 	cd, err := composed.From(helmRelease)
 	if err != nil {

@@ -14,4 +14,3 @@ func ExtractRepoInfo(url string) (string, string, bool) {
 	}
 	return repoMatches[1], userMatches[1], true
 }
-

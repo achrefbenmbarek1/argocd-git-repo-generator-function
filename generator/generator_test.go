@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
+	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
+	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
-	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
+	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
 )
 
 func TestGenerateSetItems(t *testing.T) {
@@ -225,59 +225,59 @@ func TestGenerateValues(t *testing.T) {
 }
 
 func generateExpectedValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string) map[string]interface{} {
-    credentialTemplates := make(map[string]interface{})
-    repositories := make(map[string]interface{})
+	credentialTemplates := make(map[string]interface{})
+	repositories := make(map[string]interface{})
 
-    for _, url := range reposUrls {
-        if !isValidURL(url) {
-            continue
-        }
+	for _, url := range reposUrls {
+		if !isValidURL(url) {
+			continue
+		}
 
-        repoName, username := parseRepoInfo(url)
-        if repoName == "" || username == "" {
-            continue
-        }
+		repoName, username := parseRepoInfo(url)
+		if repoName == "" || username == "" {
+			continue
+		}
 
-        key := "github-private-repo-" + repoName
-        credentialTemplates[key] = map[string]interface{}{"url": url}
-        repositories[key] = map[string]interface{}{
-            "url":            url,
-            "type":           "git",
-            "name":           repoName,
-            "credentialName": username,
-        }
-    }
+		key := "github-private-repo-" + repoName
+		credentialTemplates[key] = map[string]interface{}{"url": url}
+		repositories[key] = map[string]interface{}{
+			"url":            url,
+			"type":           "git",
+			"name":           repoName,
+			"credentialName": username,
+		}
+	}
 
-    // Handle nil slice conversion for extraArgs
-    var extraArgs interface{}
-    if in.Spec.ForProvider.Values.Server.ExtraArgs != nil {
-        extraArgs = in.Spec.ForProvider.Values.Server.ExtraArgs
-    }
+	// Handle nil slice conversion for extraArgs
+	var extraArgs interface{}
+	if in.Spec.ForProvider.Values.Server.ExtraArgs != nil {
+		extraArgs = in.Spec.ForProvider.Values.Server.ExtraArgs
+	}
 
-    return map[string]interface{}{
-        "server": map[string]interface{}{
-            "service": map[string]interface{}{
-                "type": in.Spec.ForProvider.Values.Server.Service.Type,
-            },
-            "ingress": map[string]interface{}{
-                "enabled":          in.Spec.ForProvider.Values.Server.Ingress.Enabled,
-                "ingressClassName": in.Spec.ForProvider.Values.Server.Ingress.IngressClassName,
-                "hostname":         in.Spec.ForProvider.Values.Server.Ingress.Hostname,
-                "path":             in.Spec.ForProvider.Values.Server.Ingress.Path,
-                "pathType":         in.Spec.ForProvider.Values.Server.Ingress.PathType,
-                "tls":              in.Spec.ForProvider.Values.Server.Ingress.TLS,
-            },
-            "extraArgs": extraArgs, // Now matches JSON null when empty
-        },
-        "configs": map[string]interface{}{
-            "secret": map[string]interface{}{
-                "createSecret":               in.Spec.ForProvider.Values.Configs.Secret.CreateSecret,
-                "argocdServerAdminPassword":  in.Spec.ForProvider.Values.Configs.Secret.ArgoCDServerAdminPassword,
-            },
-            "credentialTemplates": credentialTemplates,
-            "repositories":        repositories,
-        },
-    }
+	return map[string]interface{}{
+		"server": map[string]interface{}{
+			"service": map[string]interface{}{
+				"type": in.Spec.ForProvider.Values.Server.Service.Type,
+			},
+			"ingress": map[string]interface{}{
+				"enabled":          in.Spec.ForProvider.Values.Server.Ingress.Enabled,
+				"ingressClassName": in.Spec.ForProvider.Values.Server.Ingress.IngressClassName,
+				"hostname":         in.Spec.ForProvider.Values.Server.Ingress.Hostname,
+				"path":             in.Spec.ForProvider.Values.Server.Ingress.Path,
+				"pathType":         in.Spec.ForProvider.Values.Server.Ingress.PathType,
+				"tls":              in.Spec.ForProvider.Values.Server.Ingress.TLS,
+			},
+			"extraArgs": extraArgs, // Now matches JSON null when empty
+		},
+		"configs": map[string]interface{}{
+			"secret": map[string]interface{}{
+				"createSecret":              in.Spec.ForProvider.Values.Configs.Secret.CreateSecret,
+				"argocdServerAdminPassword": in.Spec.ForProvider.Values.Configs.Secret.ArgoCDServerAdminPassword,
+			},
+			"credentialTemplates": credentialTemplates,
+			"repositories":        repositories,
+		},
+	}
 }
 
 // isValidURL checks if the URL matches the expected format (simplified for testing)

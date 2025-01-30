@@ -7,9 +7,11 @@ import (
 
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1Input"
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/utils"
-	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
-	v1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+
+	v1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+
+	"github.com/crossplane-contrib/provider-helm/apis/release/v1beta1"
 )
 
 func GenerateValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string) ([]byte, error) {
@@ -25,7 +27,7 @@ func GenerateValues(in *v1beta1Input.ArgoRepoGeneratorInput, reposUrls []string)
 }
 
 func GenerateSetItems(urls []string) []v1beta1.SetVal {
-  setItems := []v1beta1.SetVal{}
+	setItems := []v1beta1.SetVal{}
 	for _, url := range urls {
 		repoName, _, valid := utils.ExtractRepoInfo(url)
 		if !valid {
