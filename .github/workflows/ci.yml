@@ -83,48 +83,80 @@ jobs:
           - amd64
           # - arm64
     steps:
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
-
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          version: ${{ env.DOCKER_BUILDX_VERSION }}
-          install: true
+      # - name: Setup QEMU
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     platforms: all
+      #
+      # - name: Setup Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
+      #   with:
+      #     version: ${{ env.DOCKER_BUILDX_VERSION }}
+      #     install: true
 
       - name: Checkout
         uses: actions/checkout@v4
 
       # We ask Docker to use GitHub Action's native caching support to speed up
       # the build, per https://docs.docker.com/build/cache/backends/gha/.
-      - name: Build Runtime
-        id: image
-        uses: docker/build-push-action@v5
+      # - name: Build Runtime
+      #   id: image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/${{ matrix.arch }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+      #     target: image
+      #     build-args:
+      #       GO_VERSION=${{ env.GO_VERSION }}
+      #     outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
+      
+      - name: Setup ko
+        uses: imjasonh/setup-ko@v0.6
         with:
-          context: .
-          platforms: linux/${{ matrix.arch }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          target: image
-          build-args:
-            GO_VERSION=${{ env.GO_VERSION }}
-          outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
-
-      - name: Setup the Crossplane CLI
-        run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
+          version: 0.15.1
 
       - name: Build Package
-        run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
+        env:
+          KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
+          KOCACHE: /tmp/ko-cache
+        run: |
+          mkdir -p $KOCACHE
+          
+          # Build with reproducible timestamps
+          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+          
+          # Build image and get exact reference
+          IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
 
-      - name: Upload Single-Platform Package
+          # Create Crossplane package
+          ./crossplane xpkg build \
+            --package-file=package.xpkg \
+            --package-root=package/ \
+            --embed-runtime-image=$IMAGE_REF
+
+      - name: Upload Package
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.arch }}
-          path: "*.xpkg"
-          if-no-files-found: error
+          name: package
+          path: package.xpkg
           retention-days: 1
+
+
+      # - name: Setup the Crossplane CLI
+      #   run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
+      #
+      # - name: Build Package
+      #   run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
+      #
+      # - name: Upload Single-Platform Package
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package-${{ matrix.arch }}
+      #     path: "*.xpkg"
+      #     if-no-files-found: error
+      #     retention-days: 1
 
   # This job downloads the single-platform packages built by the build job, and
   # pushes them as a multi-platform package. We only push the package it the

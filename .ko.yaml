@@ -1,0 +1,10 @@
+defaultBaseImage: gcr.io/distroless/static-debian12:nonroot
+builds:
+- id: function
+  dir: .
+  flags:
+  - -trimpath
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
