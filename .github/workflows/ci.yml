@@ -99,24 +99,47 @@ jobs:
 
       # We ask Docker to use GitHub Action's native caching support to speed up
       # the build, per https://docs.docker.com/build/cache/backends/gha/.
+      # - name: Build Runtime
+      #   id: image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/${{ matrix.arch }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+      #     target: image
+      #     build-args:
+      #       GO_VERSION=${{ env.GO_VERSION }}
+      #     outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
       - name: Build Runtime
         id: image
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/${{ matrix.arch }}
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
           target: image
           build-args:
             GO_VERSION=${{ env.GO_VERSION }}
-          outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
+          outputs: type=image,name=ghcr.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }},push=true
+      - name: Create Manifest
+        run: |
+          docker manifest create ghcr.io/your-org/your-package:${{ env.XPKG_VERSION }} \
+            --amend ghcr.io/your-org/your-package:${{ env.XPKG_VERSION }}-amd64 \
+            --amend ghcr.io/your-org/your-package:${{ env.XPKG_VERSION }}-arm64
+          docker manifest push ghcr.io/your-org/your-package:${{ env.XPKG_VERSION }}
+            - name: Setup the Crossplane CLI
+              run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
 
-      - name: Setup the Crossplane CLI
-        run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
-
+      # - name: Build Package
+      #   run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
       - name: Build Package
-        run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
+        run: |
+          ./crossplane xpkg build \
+            --package-file=package.xpkg \
+            --package-root=package/ \
+            --base-image=ghcr.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}
 
       - name: Upload Single-Platform Package
         uses: actions/upload-artifact@v4
