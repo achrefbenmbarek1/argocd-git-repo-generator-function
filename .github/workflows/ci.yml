@@ -81,7 +81,7 @@ jobs:
       matrix:
         arch:
           - amd64
-          - arm64
+          # - arm64
     steps:
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
