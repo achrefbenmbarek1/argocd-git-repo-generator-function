@@ -2,7 +2,7 @@
 
 # Pin exact Go version and digest for reproducibility
 ARG GO_VERSION=1.22.4
-ARG GO_DIGEST=sha256:0f5f3a28f710a5bbab5b31a7f8b6463fe14a1a8d0656f3e7e0b5a15dcf6c7f1e
+ARG GO_DIGEST=sha256:c8736b8dbf2b12c98bb0eeed91eef58ecef52b8c2bd49b8044531e8d8d8d58e8
 
 # Use explicit platform and digest for build stage
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}@${GO_DIGEST} AS build
@@ -40,7 +40,7 @@ RUN --mount=target=. \
     go build -trimpath -ldflags="-buildid= -w -s" -o /function .
 
 # Final image with pinned distroless digest
-FROM gcr.io/distroless/static-debian12@sha256:ad2fc03f2c995491b6d2eb357fe1a6d05d47c1f8b1160a1a38641b3c405a7f6e
+FROM gcr.io/distroless/static-debian12@sha256:3f2b64ef97bd285e36132c684e6b2ae8f2723293d09aae046196cca64251acac
 
 WORKDIR /
 COPY --from=build --chmod=0755 /function /function
