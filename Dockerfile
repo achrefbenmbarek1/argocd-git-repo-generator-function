@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
 # Pin exact Go version and digest for reproducibility
 ARG GO_VERSION=1.22.4
