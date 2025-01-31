@@ -4,7 +4,7 @@
 # The GitHub Actions CI job sets this argument for a consistent Go version.
 ARG GO_VERSION=1.22.4
 ARG GO_DIGEST=sha256:c8736b8dbf2b12c98bb0eeed91eef58ecef52b8c2bd49b8044531e8d8d8d58e8
-ARG DEBIAN_DIGEST=sha256:3f2b64ef97bd285e36132c684e6b2ae8f2723293d09aae046196cca64251acac
+ARG DEBIAN_DIGEST=sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02
 
 # Setup the base environment. The BUILDPLATFORM is set automatically by Docker.
 # The --platform=${BUILDPLATFORM} flag tells Docker to build the function using
@@ -42,7 +42,7 @@ RUN --mount=target=. \
 
 # Produce the Function image. We use a very lightweight 'distroless' image that
 # does not include any of the build tools used in previous stages.
-FROM gcr.io/distroless/static-debian12@${DEBIAN_DIGEST}:nonroot AS image
+FROM gcr.io/distroless/static-debian12:nonroot@${DEBIAN_DIGEST} AS image
 WORKDIR /
 COPY --from=build /function /function
 EXPOSE 9443
