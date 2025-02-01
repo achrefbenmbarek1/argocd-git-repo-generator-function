@@ -132,15 +132,13 @@ jobs:
           KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
           KOCACHE: /tmp/ko-cache
         run: |
-          nix-shell -p ko 
-          bash
-          mkdir -p $KOCACHE
           
           # Build with reproducible timestamps
           export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
-          
+
+          nix-shell -p ko --run '
+          mkdir -p $KOCACHE
           # Build image and get exact reference
-          ko build --bare --platform=linux/amd64 .
           IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
 
           # Create Crossplane package
@@ -148,6 +146,7 @@ jobs:
             --package-file=package.xpkg \
             --package-root=package/ \
             --embed-runtime-image=$IMAGE_REF
+          ' 
 
       - name: Upload Package
         uses: actions/upload-artifact@v4
