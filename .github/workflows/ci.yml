@@ -133,6 +133,7 @@ jobs:
           KOCACHE: /tmp/ko-cache
         run: |
           nix-shell -p ko 
+          bash
           mkdir -p $KOCACHE
           
           # Build with reproducible timestamps
