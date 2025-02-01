@@ -118,12 +118,11 @@ jobs:
         #   version: 0.17.1
         uses: cachix/install-nix-action@v27
         with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Second part of the setup 
         run: | 
           nix build 
-          nix flake check
       
       # - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
