@@ -133,11 +133,11 @@ jobs:
           KOCACHE: /tmp/ko-cache
         run: |
           
-          # Build with reproducible timestamps
-          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 
           nix-shell -p ko --run '
           mkdir -p $KOCACHE
+          # Build with reproducible timestamps
+          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
           # Build image and get exact reference
           IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
           #installing crossplane
