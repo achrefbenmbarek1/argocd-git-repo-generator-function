@@ -118,6 +118,8 @@ jobs:
         #   version: 0.17.1
         run:  |
           sh <(curl -L https://nixos.org/nix/install) --daemon
+          source ~/.config/fish/config.fish
+          echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
       
       - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
