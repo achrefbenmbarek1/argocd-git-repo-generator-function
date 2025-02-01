@@ -210,11 +210,18 @@ jobs:
       # Go's pseudo-versions: https://go.dev/ref/mod#pseudo-versions.
       - name: Set Default Multi-Platform Package Version
         if: env.XPKG_VERSION == ''
-        run: echo "XPKG_VERSION=v0.0.0-$(date -d@$(git show -s --format=%ct) +%Y%m%d%H%M%S)-$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
+        # run: echo "XPKG_VERSION=v0.0.0-$(date -d@$(git show -s --format=%ct) +%Y%m%d%H%M%S)-$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
+        run: |
+          echo "XPKG_VERSION=v0.0.0-$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
 
-      - name: Push Multi-Platform Package to Upbound
-        if: env.XPKG_ACCESS_ID != ''
+      # - name: Push Multi-Platform Package to Upbound
+      #   if: env.XPKG_ACCESS_ID != ''
         # XPKG repo name can't contain uppercase characters like UpboundCare, we need to lowercase if the GithubOrg contains them.
         # See https://github.com/orgs/community/discussions/25768#discussioncomment-8057564 for XPKG@L lowercase explanation
-        # run: "./crossplane --verbose xpkg push --package-files $(echo *.xpkg|tr ' ' ,) ${XPKG@L}:${{ env.XPKG_VERSION }}"
-        run: "./crossplane --verbose xpkg push --package-files $(echo *.xpkg | tr ' ' ,) xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}"
+        # run: "./crossplane --verbose xpkg push --package-files $(echo *.xpkg | tr ' ' ,) xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}"
+      - name: Push Package
+        if: env.XPKG_ACCESS_ID != ''
+        run: |
+          ./crossplane xpkg push \
+            --package-files package.xpkg \
+            xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}
