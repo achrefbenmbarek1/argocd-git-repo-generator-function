@@ -125,12 +125,12 @@ jobs:
           nix build 
           nix flake check
       
-      - name: Setup ko
+      # - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
         # with:
         #   version: 0.17.1
-        run:  |
-          nix shell nixpkgs#ko --experimental-features 'nix-command flakes'
+        # run:  |
+        #   nix shell nixpkgs#ko --experimental-features 'nix-command flakes'
 
       - name: Build Package
         env:
