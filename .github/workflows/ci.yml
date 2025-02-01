@@ -119,10 +119,6 @@ jobs:
         uses: cachix/install-nix-action@v27
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Second part of the setup 
-        run: | 
-          nix-shell -p ko 
       
       # - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
@@ -136,6 +132,7 @@ jobs:
           KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
           KOCACHE: /tmp/ko-cache
         run: |
+          nix-shell -p ko 
           mkdir -p $KOCACHE
           
           # Build with reproducible timestamps
