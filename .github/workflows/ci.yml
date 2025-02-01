@@ -113,9 +113,9 @@ jobs:
       #     outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
       
       - name: Setup ko
-        uses: imjasonh/setup-ko@v0.6
+        uses: imjasonh/setup-ko@v0.8
         with:
-          version: 0.15.1
+          version: 0.17.1
 
       - name: Build Package
         env:
