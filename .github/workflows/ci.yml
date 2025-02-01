@@ -140,6 +140,7 @@ jobs:
           export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
           
           # Build image and get exact reference
+          ko build --bare --platform=linux/amd64 .
           IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
 
           # Create Crossplane package
