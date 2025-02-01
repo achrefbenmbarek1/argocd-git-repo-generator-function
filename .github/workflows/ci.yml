@@ -140,6 +140,8 @@ jobs:
           mkdir -p $KOCACHE
           # Build image and get exact reference
           IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
+          #installing crossplane
+          curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
 
           # Create Crossplane package
           ./crossplane xpkg build \
