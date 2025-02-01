@@ -122,7 +122,7 @@ jobs:
 
       - name: Second part of the setup 
         run: | 
-          nix build 
+          nix-shell -p ko 
       
       # - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
