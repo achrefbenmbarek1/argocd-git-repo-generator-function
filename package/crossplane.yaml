@@ -2,5 +2,5 @@
 apiVersion: meta.pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
-  name: function-generate-repo-name-argocd
+  name: argocd-git-repo-generator-function
 spec: {}
