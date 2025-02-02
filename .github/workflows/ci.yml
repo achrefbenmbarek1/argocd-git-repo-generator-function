@@ -99,29 +99,42 @@ jobs:
 
       # We ask Docker to use GitHub Action's native caching support to speed up
       # the build, per https://docs.docker.com/build/cache/backends/gha/.
-      - name: Build Runtime
-        id: image
+      # - name: Build Runtime
+      #   id: image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/${{ matrix.arch }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+      #     target: image
+      #     build-args:
+      #       GO_VERSION=${{ env.GO_VERSION }}
+      #     outputs: type=docker,dest=runtime-${{ matrix.arch }}
+      #
+      - name: Build Runtime Image
         uses: docker/build-push-action@v5
+        id: build
         with:
           context: .
-          platforms: linux/${{ matrix.arch }}
+          platforms: linux/amd64
+          tags: runtime-amd64
+          outputs: type=docker,dest=runtime-amd64.tar
+          build-args: |
+            GO_VERSION=${{ env.GO_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # no-cache: true
-          target: image
-          build-args:
-            GO_VERSION=${{ env.GO_VERSION }}
-          outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
+
       - name: Setup the Crossplane CLI
         run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
 
       - name: Build Package
-        run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
+        run: ./crossplane xpkg build --package-file=function-${{ matrix.arch }}.xpkg --package-root=package --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
 
       - name: Upload Single-Platform Package
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.arch }}
+          name: function-${{ matrix.arch }}
           path: "*.xpkg"
           if-no-files-found: error
           retention-days: 1

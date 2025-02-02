@@ -12,7 +12,7 @@ ENV CGO_ENABLED=0
 
 # Cache dependencies
 RUN --mount=target=. \
-    # --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/go/pkg/mod \
     go mod download
 
 # Build with reproducibility flags
