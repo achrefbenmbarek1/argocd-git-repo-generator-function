@@ -145,7 +145,6 @@ jobs:
 
           # Create Crossplane package
           ./crossplane xpkg build \
-            --name "argocd-git-repo-generator-function" \
             --package-file=package.xpkg \
             --package-root=package/ \
             --embed-runtime-image=$IMAGE_REF
