@@ -16,8 +16,8 @@ RUN --mount=target=. \
 
 # Build with reproducibility flags
 RUN --mount=target=. \
-    # --mount=type=cache,target=/go/pkg/mod \
-    # --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -trimpath -ldflags="-s -w -buildid=" -o /function .
 

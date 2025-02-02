@@ -105,9 +105,9 @@ jobs:
         with:
           context: .
           platforms: linux/${{ matrix.arch }}
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # no-cache: true
           target: image
           build-args:
             GO_VERSION=${{ env.GO_VERSION }}
