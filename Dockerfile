@@ -21,9 +21,15 @@ RUN --mount=target=. \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -trimpath -ldflags="-s -w -buildid=" -o /function .
 
-FROM gcr.io/distroless/static-debian12:nonroot@sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02 AS image
+# FROM gcr.io/distroless/static-debian12:nonroot@sha256:6ec5aa99dc335666e79dc64e4a6c8b89c33a543a1967f20d360922a80dd21f02 AS image
+#
+# COPY --from=build --chmod=0755 /function /function
+#
+# USER nonroot:nonroot
+# ENTRYPOINT ["/function"]
+FROM debian:bullseye-slim AS image
 
 COPY --from=build --chmod=0755 /function /function
 
-USER nonroot:nonroot
+USER root
 ENTRYPOINT ["/function"]
