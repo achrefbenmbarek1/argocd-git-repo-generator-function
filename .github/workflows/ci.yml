@@ -99,26 +99,38 @@ jobs:
 
       # We ask Docker to use GitHub Action's native caching support to speed up
       # the build, per https://docs.docker.com/build/cache/backends/gha/.
-      # - name: Build Runtime
-      #   id: image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     platforms: linux/${{ matrix.arch }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
-      #     target: image
-      #     build-args:
-      #       GO_VERSION=${{ env.GO_VERSION }}
-      #     outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
-      #
-      - name: Setup nix
-        # uses: imjasonh/setup-ko@v0.8
-        # with:
-        #   version: 0.17.1
-        uses: cachix/install-nix-action@v27
+      - name: Build Runtime
+        id: image
+        uses: docker/build-push-action@v5
         with:
-          nix_path: nixpkgs=channel:nixos-unstable
+          context: .
+          platforms: linux/${{ matrix.arch }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          target: image
+          build-args:
+            GO_VERSION=${{ env.GO_VERSION }}
+          outputs: type=docker,dest=runtime-${{ matrix.arch }}.tar
+      - name: Setup the Crossplane CLI
+        run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
+
+      - name: Build Package
+        run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
+
+      - name: Upload Single-Platform Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.arch }}
+          path: "*.xpkg"
+          if-no-files-found: error
+          retention-days: 1
+
+
+      #
+      # - name: Setup nix
+      #   uses: cachix/install-nix-action@v27
+      #   with:
+      #     nix_path: nixpkgs=channel:nixos-unstable
       
       # - name: Setup ko
         # uses: imjasonh/setup-ko@v0.8
@@ -127,35 +139,35 @@ jobs:
         # run:  |
         #   nix shell nixpkgs#ko --experimental-features 'nix-command flakes'
 
-      - name: Build Package
-        env:
-          KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
-          KOCACHE: /tmp/ko-cache
-        run: |
-          
-
-          nix-shell -p ko --run '
-          mkdir -p $KOCACHE
-          # Build with reproducible timestamps
-          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
-          # Build image and get exact reference
-          IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
-          #installing crossplane
-          curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
-
-          # Create Crossplane package
-          ./crossplane xpkg build \
-            --package-file=package.xpkg \
-            --package-root=package/ \
-            --embed-runtime-image=$IMAGE_REF
-          ' 
-
-      - name: Upload Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: package
-          path: package.xpkg
-          retention-days: 1
+      # - name: Build Package
+      #   env:
+      #     KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
+      #     KOCACHE: /tmp/ko-cache
+      #   run: |
+      #     
+      #
+      #     nix-shell -p ko --run '
+      #     mkdir -p $KOCACHE
+      #     # Build with reproducible timestamps
+      #     export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+      #     # Build image and get exact reference
+      #     IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
+      #     #installing crossplane
+      #     curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
+      #
+      #     # Create Crossplane package
+      #     ./crossplane xpkg build \
+      #       --package-file=package.xpkg \
+      #       --package-root=package/ \
+      #       --embed-runtime-image=$IMAGE_REF
+      #     ' 
+      #
+      # - name: Upload Package
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package
+      #     path: package.xpkg
+      #     retention-days: 1
 
 
       # - name: Setup the Crossplane CLI
@@ -223,5 +235,5 @@ jobs:
         if: env.XPKG_ACCESS_ID != ''
         run: |
           ./crossplane xpkg push \
-            --package-files package.xpkg \
+            --package-files $(echo *.xpkg|tr ' ' ,) \
             xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}
