@@ -7,6 +7,7 @@ import (
 
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/generator"
 	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/input/v1beta1"
+	"github.com/achrefbenmbarek1/argocd-git-repo-generator-function/utils"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
@@ -24,7 +25,7 @@ func TestGenerateSetItems(t *testing.T) {
 			urls: []string{"git@github.com:achrefbenmbarek1/libraryManagementBackConfig.git"},
 			want: []v1beta1.SetVal{
 				{
-					Name: "configs.credentialTemplates.github-private-repo-libraryManagementBackConfig.sshPrivateKey",
+					Name: "configs.credentialTemplates.github-private-repo-library-management-back-config.sshPrivateKey",
 					ValueFrom: &v1beta1.ValueFromSource{
 						SecretKeyRef: &v1beta1.DataKeySelector{
 							NamespacedName: v1beta1.NamespacedName{
@@ -238,12 +239,12 @@ func generateExpectedValues(in *v1beta1input.ArgoRepoGeneratorInput, reposUrls [
 			continue
 		}
 
-		key := "github-private-repo-" + repoName
+		key := "github-private-repo-" + utils.ToKebabCaseForValidKuberSecrets(repoName)
 		credentialTemplates[key] = map[string]interface{}{"url": url}
 		repositories[key] = map[string]interface{}{
 			"url":            url,
 			"type":           "git",
-			"name":           repoName,
+			"name":           utils.ToKebabCaseForValidKuberSecrets(repoName),
 			"credentialName": username,
 		}
 	}

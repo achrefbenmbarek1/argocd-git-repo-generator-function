@@ -14,11 +14,12 @@ func GenerateRepositories(urls []string) map[string]interface{} {
 		if !valid {
 			continue
 		}
-		key := "github-private-repo-" + repoName
+    validResourceNameForKuber := utils.ToKebabCaseForValidKuberSecrets(repoName)
+		key := "github-private-repo-" + validResourceNameForKuber
 		repositories[key] = models.Repository{
 			URL:            url,
 			Type:           "git",
-			Name:           repoName,
+			Name:           validResourceNameForKuber,
 			CredentialName: username,
 		}
 	}
@@ -32,7 +33,8 @@ func GenerateCredentialTemplates(urls []string) map[string]interface{} {
 		if !valid {
 			continue
 		}
-		key := "github-private-repo-" + repoName
+    validResourceNameForKuber := utils.ToKebabCaseForValidKuberSecrets(repoName)
+		key := "github-private-repo-" + validResourceNameForKuber
 		credentials[key] = map[string]interface{}{
 			"url": url,
 		}
