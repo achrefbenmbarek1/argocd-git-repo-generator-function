@@ -25,7 +25,6 @@ func GenerateValues(in *v1beta1input.ArgoRepoGeneratorInput, reposUrls []string)
 	return json.Marshal(values)
 }
 
-
 func GenerateSetItems(urls []string) []v1beta1.SetVal {
 	setItems := []v1beta1.SetVal{}
 	for _, url := range urls {
@@ -33,7 +32,7 @@ func GenerateSetItems(urls []string) []v1beta1.SetVal {
 		if !valid {
 			continue
 		}
-    validResourceNameForKuber := utils.ToKebabCaseForValidKuberSecrets(repoName)
+		validResourceNameForKuber := utils.ToKebabCaseForValidKuberSecrets(repoName)
 		key := "github-private-repo-" + validResourceNameForKuber
 		setItems = append(setItems, v1beta1.SetVal{
 			Name: fmt.Sprintf("configs.credentialTemplates.%s.sshPrivateKey", key),
