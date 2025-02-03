@@ -139,68 +139,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-
-      #
-      # - name: Setup nix
-      #   uses: cachix/install-nix-action@v27
-      #   with:
-      #     nix_path: nixpkgs=channel:nixos-unstable
-      
-      # - name: Setup ko
-        # uses: imjasonh/setup-ko@v0.8
-        # with:
-        #   version: 0.17.1
-        # run:  |
-        #   nix shell nixpkgs#ko --experimental-features 'nix-command flakes'
-
-      # - name: Build Package
-      #   env:
-      #     KO_DOCKER_REPO: xpkg.upbound.io/benmbarekachref
-      #     KOCACHE: /tmp/ko-cache
-      #   run: |
-      #     
-      #
-      #     nix-shell -p ko --run '
-      #     mkdir -p $KOCACHE
-      #     # Build with reproducible timestamps
-      #     export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
-      #     # Build image and get exact reference
-      #     IMAGE_REF=$(ko build --bare --platform=linux/amd64 .)
-      #     #installing crossplane
-      #     curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh
-      #
-      #     # Create Crossplane package
-      #     ./crossplane xpkg build \
-      #       --package-file=package.xpkg \
-      #       --package-root=package/ \
-      #       --embed-runtime-image=$IMAGE_REF
-      #     ' 
-      #
-      # - name: Upload Package
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: package
-      #     path: package.xpkg
-      #     retention-days: 1
-
-
-      # - name: Setup the Crossplane CLI
-      #   run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
-      #
-      # - name: Build Package
-      #   run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
-      #
-      # - name: Upload Single-Platform Package
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: package-${{ matrix.arch }}
-      #     path: "*.xpkg"
-      #     if-no-files-found: error
-      #     retention-days: 1
-
-  # This job downloads the single-platform packages built by the build job, and
-  # pushes them as a multi-platform package. We only push the package it the
-  # XPKG_ACCESS_ID and XPKG_TOKEN secrets were provided.
   push:
     runs-on: ubuntu-24.04
     needs:
@@ -218,13 +156,6 @@ jobs:
       - name: Setup the Crossplane CLI
         run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
 
-      # - name: Login to Upbound
-      #   uses: docker/login-action@v3
-      #   if: env.XPKG_ACCESS_ID != ''
-      #   with:
-      #     registry: xpkg.upbound.io
-      #     username: ${{ secrets.XPKG_ACCESS_ID }}
-      #     password: ${{ secrets.XPKG_TOKEN }}
       - name: Login to Upbound
         if: env.XPKG_ACCESS_ID != ''
         run: |

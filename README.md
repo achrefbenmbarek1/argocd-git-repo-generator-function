@@ -1,9 +1,30 @@
 # argo-cd-git-repo-generator-function
 
-A [composition function][functions] in [Go][go] that names the repositories, the credentialTemplates, and the name keys in the Helm release resource of ArgoCD provided by the Crossplane Helm provider, dynamically based on an array of repo URLs given to the Crossplane claim.
+A composition function that generates an Argo CD Helm release based on repository URLs provided in a composite resource.
+
+Each generated release:
+
+- **Extracts Repository URLs:**  
+  Reads the composite resource field `spec.repos-urls` to retrieve an array of Git repository URLs.
+
+- **Transforms Repository Data:**  
+  For each valid repository URL, the function:
+  - Extracts the repository name and username.
+  - Converts the repository name into a Kubernetes‑friendly (lowercase kebab-case) string (it is meant to be used with ESO so that is the reason behind the dynamic nature of assigning the secret through "set").
+  - Generates set items that configure credential templates and repository entries.
+
+- **Generates Helm Values:**  
+  Constructs a JSON values object that includes:
+  - Server configuration (e.g. service type, ingress settings, extra arguments).
+  - Configurations for credentials and repositories based on the input data.
+  
+- **Creates a Helm Release Manifest:**  
+  Uses the transformed values and set items to generate a Helm release resource (using provider-helm types) that:
+  - References the Argo CD chart (name, repository, version).
+  - Sets the target namespace and applies the generated values.
+  
 
 ## How to use this:
-
 Make sure that you've a Kubernetes cluster where you've deployed Crossplane and the Helm provider of Crossplane. You will also need to define the required resources and configurations to enable proper integration. These are what you need to define:
 
 1. **Install Crossplane and the Helm Provider**:
@@ -31,5 +52,9 @@ Make sure that you've a Kubernetes cluster where you've deployed Crossplane and 
    ```bash
    kubectl apply -f helm-provider-stuff
    ```
-   just to test
 
+   - Deploy the function to your cluster through the use of the file in this repo
+   ```bash
+   kubectl apply -f argocd/argocd-git-repo-generator-function.yaml
+   ```
+   - Then incorporate it in your composition, you can look the directory: "argocd", for an example of such composition (in that example I show what inputs are needed on the composition and a claim and an xrd)

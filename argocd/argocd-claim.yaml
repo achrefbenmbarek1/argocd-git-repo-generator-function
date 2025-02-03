@@ -1,0 +1,9 @@
+apiVersion: what-is-it-that-you-truly-desire.org/v1alpha1
+kind: MyArgoCd
+metadata:
+  name: myargocd-claim
+  namespace: argocd
+spec:
+  repos-urls: 
+    - "git@github.com:achrefbenmbarek1/libraryManagementBackConfig.git"
+    - "git@github.com:achrefbenmbarek1/libraryManagementAppOfApps.git"

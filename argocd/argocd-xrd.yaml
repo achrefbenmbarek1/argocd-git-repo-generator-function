@@ -1,0 +1,35 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xmyargocds.what-is-it-that-you-truly-desire.org
+spec:
+  group: what-is-it-that-you-truly-desire.org
+  names:
+    kind: xMyArgoCd
+    plural: xmyargocds
+  claimNames:
+    kind: MyArgoCd
+    plural: myargocds
+    singular: myargocd
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                repos-urls:
+                  type: array
+                  description: urls of the repos
+                  items:
+                    type: string
+              required:
+                - repos-urls
+      additionalPrinterColumns:
+        - name: ReposUrls
+          type: string
+          jsonPath: .spec.repos-urls

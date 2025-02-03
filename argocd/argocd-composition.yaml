@@ -1,0 +1,80 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: argocd-composition
+spec:
+  compositeTypeRef:
+    apiVersion: what-is-it-that-you-truly-desire.org/v1alpha1
+    kind: xMyArgoCd
+  mode: Pipeline
+  pipeline:
+    - step: argo-repo-generator
+      functionRef:
+        name: argocd-git-repo-generator-function
+      input:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        metadata:
+          name: argocd
+        spec:
+          forProvider:
+            chart:
+              name: argo-cd
+              repository: https://argoproj.github.io/argo-helm
+              version: 7.7.10
+            namespace: argocd
+            values:
+              server: 
+                service:
+                  type: ClusterIP
+                ingress: 
+                  enabled: true
+                  ingressClassName: "nginx"
+                  hostname: "argocd.local"
+                  path: /
+                  pathType: Prefix
+                  tls: false
+                 # tls: true
+                 # annotation:
+                 #   cert-manager.io/cluster-issuer: cert-manager-webhook-duckdns-production
+                extraArgs:
+                  - --insecure
+              configs:
+                secret:
+                  createSecret: true
+                  argocdServerAdminPassword: "$2b$12$8z/N/HakTkOAiGnA4y7aGuVrlEvzierbqFuM9b0eL9EgX51ylQDWq" 
+                # credentialTemplates:
+                #   github-private-repo-ssh:
+                #     url: git@github.com:achrefbenmbarek1/libraryManagementBackConfig.git
+                #   github-private-repo-app-of-apps-ssh:
+                #     url: git@github.com:achrefbenmbarek1/libraryManagementAppOfApps.git
+                # repositories:
+                #   private-repo:
+                #     url: git@github.com:achrefbenmbarek1/libraryManagementBackConfig.git
+                #     type: git
+                #     name: myBackend
+                #     credentialName: achrefbenmbarek1
+                #   private-repo-app-of-apps:
+                #     url: git@github.com:achrefbenmbarek1/libraryManagementAppOfApps.git
+                #     type: git
+                #     name: app-of-apps
+                #     credentialName: achrefbenmbarek1
+            # set:
+            #  - name: configs.credentialTemplates.github-private-repo-ssh.sshPrivateKey
+            #    valueFrom:
+            #      secretKeyRef:
+            #        name: ssh-private-key
+            #        key: ssh-private-key
+            #        namespace: argocd
+            #  - name: configs.credentialTemplates.github-private-repo-app-of-apps-ssh.sshPrivateKey
+            #    valueFrom:
+            #      secretKeyRef:
+            #        name: ssh-private-key
+            #        key: ssh-private-key
+            #        namespace: argocd
+          # providerConfigRef:
+          #   name: helm-provider
+    - step: check-function-resource-readiness
+      functionRef:
+        name: upbound-function-auto-ready
+
