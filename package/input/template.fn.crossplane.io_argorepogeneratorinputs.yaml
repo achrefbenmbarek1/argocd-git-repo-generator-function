@@ -1,0 +1,187 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.5
+  name: argorepogeneratorinputs.template.fn.crossplane.io
+spec:
+  group: template.fn.crossplane.io
+  names:
+    categories:
+    - crossplane
+    kind: ArgoRepoGeneratorInput
+    listKind: ArgoRepoGeneratorInputList
+    plural: argorepogeneratorinputs
+    singular: argorepogeneratorinput
+  scope: Namespaced
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: ArgoRepoGeneratorInput represents the input structure for your
+          function.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ArgoRepoGeneratorSpec defines the specification for the ArgoCD
+              repository generator input.
+            properties:
+              forProvider:
+                description: ForProviderSpec defines the provider-specific fields.
+                properties:
+                  chart:
+                    description: ChartSpec specifies the Helm chart information.
+                    properties:
+                      name:
+                        type: string
+                      repository:
+                        type: string
+                      version:
+                        type: string
+                    required:
+                    - name
+                    - repository
+                    - version
+                    type: object
+                  namespace:
+                    type: string
+                  providerConfigRef:
+                    description: NameRef refers to a named configuration.
+                    properties:
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  set:
+                    items:
+                      description: SetItem defines a single set item for value overrides.
+                      properties:
+                        name:
+                          type: string
+                        valueFrom:
+                          description: ValueFrom contains value source information.
+                          properties:
+                            secretKeyRef:
+                              description: SecretKeyRef references a key in a secret.
+                              properties:
+                                key:
+                                  type: string
+                                name:
+                                  type: string
+                                namespace:
+                                  type: string
+                              required:
+                              - key
+                              - name
+                              - namespace
+                              type: object
+                          required:
+                          - secretKeyRef
+                          type: object
+                      required:
+                      - name
+                      - valueFrom
+                      type: object
+                    type: array
+                  values:
+                    description: ValuesSpec contains customizable values for the ArgoCD
+                      setup.
+                    properties:
+                      configs:
+                        description: ConfigSpec defines additional configuration options.
+                        properties:
+                          secret:
+                            description: SecretSpec contains secret-related information.
+                            properties:
+                              argocdServerAdminPassword:
+                                type: string
+                              createSecret:
+                                type: boolean
+                            required:
+                            - argocdServerAdminPassword
+                            - createSecret
+                            type: object
+                        required:
+                        - secret
+                        type: object
+                      server:
+                        description: ServerSpec contains server-related configuration.
+                        properties:
+                          extraArgs:
+                            items:
+                              type: string
+                            type: array
+                          ingress:
+                            description: IngressSpec defines ingress configuration.
+                            properties:
+                              enabled:
+                                type: boolean
+                              hostname:
+                                type: string
+                              ingressClassName:
+                                type: string
+                              path:
+                                type: string
+                              pathType:
+                                type: string
+                              tls:
+                                type: boolean
+                            required:
+                            - enabled
+                            - hostname
+                            - ingressClassName
+                            - path
+                            - pathType
+                            - tls
+                            type: object
+                          service:
+                            description: ServerServiceSpec defines the service-related
+                              details.
+                            properties:
+                              type:
+                                type: string
+                            required:
+                            - type
+                            type: object
+                        required:
+                        - extraArgs
+                        - ingress
+                        - service
+                        type: object
+                    required:
+                    - configs
+                    - server
+                    type: object
+                required:
+                - chart
+                - namespace
+                - providerConfigRef
+                - set
+                - values
+                type: object
+            required:
+            - forProvider
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
