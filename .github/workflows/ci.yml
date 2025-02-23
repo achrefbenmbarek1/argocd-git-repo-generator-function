@@ -8,10 +8,10 @@ on:
     paths-ignore:
       - 'OWNERS.md'
       - 'README.md'
-  pull_request:
-    paths-ignore:
-      - 'OWNERS.md'
-      - 'README.md'
+  # pull_request:
+  #   paths-ignore:
+  #     - 'OWNERS.md'
+  #     - 'README.md'
   workflow_dispatch:
     inputs:
       version:
