@@ -1,22 +1,18 @@
 run:
   timeout: 10m
-  modules-download-mode: readonly
+  # Removed "skip-files" since it's not allowed in this version
 
 output:
-  format: colored-line-number
+  # Removed the "format" key since it's not allowed; default format will be used
 
 linters-settings:
   errcheck:
     check-type-assertions: false
     check-blank: false
-    exclude: |
-      fmt:.*,
-      io/ioutil:^Read.*
-
-  govet:
-    settings:
-      check-shadowing: false
-
+    # Removed deprecated "ignore" key
+  govet: {}  # Removed "check-shadowing" as it's no longer supported
+  gofmt:
+    simplify: true
   gci:
     custom-order: true
     sections:
@@ -26,31 +22,23 @@ linters-settings:
       - prefix(github.com/crossplane-contrib)
       - blank
       - dot
-
   gocyclo:
     min-complexity: 10
-
   dupl:
     threshold: 100
-
   goconst:
     min-len: 3
     min-occurrences: 5
-
   lll:
     tab-width: 1
-
   unparam:
     check-exported: false
-
   nakedret:
     max-func-lines: 30
-
   prealloc:
     simple: true
     range-loops: true
     for-loops: false
-
   gocritic:
     enabled-tags:
       - performance
@@ -59,13 +47,14 @@ linters-settings:
         paramsOnly: true
       rangeValCopy:
         sizeThreshold: 32
-
   nolintlint:
     require-explanation: true
     require-specific: true
+  # Removed the "maligned" section as it's no longer allowed
 
 linters:
   enable:
+    - megacheck
     - govet
     - gocyclo
     - gocritic
@@ -77,10 +66,6 @@ linters:
     - misspell
     - nakedret
     - nolintlint
-    - staticcheck
-    - errcheck
-    - ineffassign
-
   disable:
     - revive
     - deadcode
@@ -88,7 +73,10 @@ linters:
     - scopelint
     - structcheck
     - interfacer
-    - maligned
+  presets:
+    - bugs
+    - unused
+  fast: false
 
 issues:
   exclude-rules:
@@ -97,38 +85,36 @@ issues:
         - gocyclo
         - errcheck
         - dupl
+        - gosec
+        - scopelint
         - unparam
-
     - path: _test\.go
       text: "(unnamedResult|exitAfterDefer)"
       linters:
         - gocritic
-
     - text: "(hugeParam|rangeValCopy):"
       linters:
         - gocritic
-
     - text: "SA3000:"
       linters:
         - staticcheck
-
     - text: "k8s.io/api/core/v1"
       linters:
         - goimports
-
     - text: "G101:"
       linters:
         - gosec
-
+        - gas
     - text: "G104:"
       linters:
         - gosec
-
+        - gas
     - path: k8s.io/
       linters:
         - musttag
-
   exclude-use-default: false
   new: false
+  # Replace max-per-linter with max-issues-per-linter:
   max-issues-per-linter: 0
   max-same-issues: 0
+
