@@ -1,16 +1,13 @@
 run:
   timeout: 10m
-  # Removed "skip-files" since it's not allowed in this version
 
-output:
-  # Removed the "format" key since it's not allowed; default format will be used
+output: {}  # Set as an empty object to satisfy schema
 
 linters-settings:
   errcheck:
     check-type-assertions: false
     check-blank: false
-    # Removed deprecated "ignore" key
-  govet: {}  # Removed "check-shadowing" as it's no longer supported
+  govet: {}  # Removed unsupported key "check-shadowing"
   gofmt:
     simplify: true
   gci:
@@ -50,7 +47,6 @@ linters-settings:
   nolintlint:
     require-explanation: true
     require-specific: true
-  # Removed the "maligned" section as it's no longer allowed
 
 linters:
   enable:
@@ -114,7 +110,6 @@ issues:
         - musttag
   exclude-use-default: false
   new: false
-  # Replace max-per-linter with max-issues-per-linter:
   max-issues-per-linter: 0
   max-same-issues: 0
 
