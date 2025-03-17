@@ -166,7 +166,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ variables.REGISTRY_USERNAME }}
+          username: ${{ vars.REGISTRY_USERNAME }}
           password: ${{ secrets.XPKG_TOKEN }}
 
 
