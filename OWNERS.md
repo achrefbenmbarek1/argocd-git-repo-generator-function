@@ -14,7 +14,7 @@ repository maintainers in their own `OWNERS.md` file.
 
 ## Maintainers
 
-* Eya Ben Belkacem <eya.belkacem1@gmail.com> ([eyabb](https://github.com/eyabb))
+* Eya Ben Belgacem <eya.belkacem1@gmail.com> ([eyabb](https://github.com/eyabb))
 * Achref Ben Mbarek <achrefbenmbarekopensource@gmail.com> ([achrefbenmbarek1](https://github.com/achrefbenmbarek1))
 
 See [CODEOWNERS](./CODEOWNERS) for automatic PR assignment.

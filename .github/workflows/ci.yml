@@ -29,7 +29,8 @@ env:
 
   # The package to push, without a version tag. The default matches GitHub. For
   # example xpkg.upbound.io/crossplane/function-template-go.
-  XPKG: xpkg.upbound.io/${{ github.repository}}
+  # XPKG: xpkg.upbound.io/${{ github.repository}}
+  XPKG: ghcr.io/${{ github.repository}}
 
   # The package version to push. The default is 0.0.0-gitsha.
   XPKG_VERSION: ${{ inputs.version }}
@@ -155,8 +156,12 @@ jobs:
       - name: Setup the Crossplane CLI
         run: "curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | sh"
 
-      - name: Login to Upbound
-        if: env.XPKG_ACCESS_ID != ''
+      # - name: Login to Upbound
+      #   if: env.XPKG_ACCESS_ID != ''
+      #   run: |
+      #     ./crossplane xpkg login --token=${{ secrets.XPKG_TOKEN }}
+
+      - name: Login to ghcr
         run: |
           ./crossplane xpkg login --token=${{ secrets.XPKG_TOKEN }}
 
@@ -175,9 +180,16 @@ jobs:
         # XPKG repo name can't contain uppercase characters like UpboundCare, we need to lowercase if the GithubOrg contains them.
         # See https://github.com/orgs/community/discussions/25768#discussioncomment-8057564 for XPKG@L lowercase explanation
         # run: "./crossplane --verbose xpkg push --package-files $(echo *.xpkg | tr ' ' ,) xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}"
+
+      # - name: Push Package
+      #   if: env.XPKG_ACCESS_ID != ''
+      #   run: |
+      #     ./crossplane xpkg push \
+      #       --package-files $(echo *.xpkg|tr ' ' ,) \
+      #       xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}
+
       - name: Push Package
-        if: env.XPKG_ACCESS_ID != ''
         run: |
           ./crossplane xpkg push \
             --package-files $(echo *.xpkg|tr ' ' ,) \
-            xpkg.upbound.io/benmbarekachref/argocd-git-repo-generator-function:${{ env.XPKG_VERSION }}
+            ${{ env.XPKG }}:${{ env.XPKG_VERSION }}
